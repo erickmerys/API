@@ -5,36 +5,36 @@ import (
 	"net/http"
 )
 
-var rotaUsuarios = []Rotas {
-//Esse metodo cadastra um usuario
+var rotaUsuarios = []Rotas{
+	//Esse metodo cadastra um usuario
 	{
-		URI: "/usuarios",
-		Metodo: 			 http.MethodPost,
-		Funcao:				 controllers.CriarUsuario,
+		URI:                 "/usuarios",
+		Metodo:              http.MethodPost,
+		Funcao:              controllers.CriarUsuario,
 		RequestAutenticacao: false,
 	},
 	{
-		URI: "/usuarios",
-		Metodo: 			 http.MethodGet,
-		Funcao: 			 controllers.BuscarUsuarios,
+		URI:                 "/usuarios",
+		Metodo:              http.MethodGet,
+		Funcao:              controllers.BuscarUsuarios,
 		RequestAutenticacao: false,
 	},
 	{
-		URI: "/usuarios/{usuarioId}",
-		Metodo: http.MethodGet,
-		Funcao: controllers.BuscarUsuario,
+		URI:                 "/usuarios/{usuarioId}",
+		Metodo:              http.MethodGet,
+		Funcao:              controllers.BuscarUsuario,
 		RequestAutenticacao: false,
 	},
 	{
-		URI: "/usuarios/{usuarioId}",
-		Metodo: 			 http.MethodPut,
-		Funcao: 		 	 controllers.AtualizarUsuario,
+		URI:                 "/usuarios/{usuarioId}",
+		Metodo:              http.MethodPut,
+		Funcao:              controllers.AtualizarUsuario,
 		RequestAutenticacao: false,
 	},
 	{
-		URI: "/usuarios/{usuarioId}",
-		Metodo: 			 http.MethodDelete,
-		Funcao: 			 controllers.DeletarUsuario,
+		URI:                 "/usuarios/{usuarioId}",
+		Metodo:              http.MethodDelete,
+		Funcao:              controllers.DeletarUsuario,
 		RequestAutenticacao: false,
 	},
 }

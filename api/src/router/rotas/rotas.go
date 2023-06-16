@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Rota representa todas as rotas para API
 type Rotas struct {
 URI					string
 Metodo				string
