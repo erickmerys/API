@@ -4,44 +4,71 @@ import (
 	"api/src/banco"
 	"api/src/modelos"
 	"api/src/repositorios"
+	"api/src/repostas"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
+	"strings"
+
 	"net/http"
 )
 
-//CriarUsuario cria um usuário no banco de dados
+// CriarUsuario cria um usuário no banco de dados
 func CriarUsuario(w http.ResponseWriter, r *http.Request) {
 	corpoRequest, erro := ioutil.ReadAll(r.Body)
 	if erro != nil {
-		log.Fatal(erro)
+		repostas.Erro(w, http.StatusUnprocessableEntity, erro)
+		return
 	}
 
 	var usuario modelos.Usuario
 	if erro = json.Unmarshal(corpoRequest, &usuario); erro != nil {
-		log.Fatal(erro)
+		repostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	if erro := usuario.Preparar(); erro != nil {
+		repostas.Erro(w, http.StatusBadRequest, erro)
+		return
 	}
 
 	db, erro := banco.Conectar()
 	if erro != nil {
-		log.Fatal(erro)
+		repostas.Erro(w, http.StatusInternalServerError, erro)
 	}
+	defer db.Close()
 
 	repositorio := repositorios.NovoRepositorioDeUsuario(db)
-	usuarioID, erro := repositorio.Criar(usuario)
+	usuario.ID, erro = repositorio.Criar(usuario)
 	if erro != nil {
-		log.Fatal()
+		repostas.Erro(w, http.StatusInternalServerError, erro)
+		return
 	}
-	w.Write([]byte(fmt.Sprintf("Id inserido: %d", usuarioID)))
+
+	repostas.JSON(w, http.StatusCreated, usuario)
 }
 
-//BuscarUsuarios busca mais de um usuário do banco dados
+// BuscarUsuarios busca mais de um usuário do banco dados
 func BuscarUsuarios(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Buscando usuários no banco de dados!"))
+	usuarioOuNick := strings.ToLower(r.URL.Query().Get("usuario"))
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		repostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repositorio := repositorios.NovoRepositorioDeUsuario(db)
+	usuarios, erro := repositorio.Buscar(usuarioOuNick)
+	if erro != nil {
+		repostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	repostas.JSON(w, http.StatusOK, usuarios)
 }
 
-//BusacarUsuario busca um usuário no banco de dados
+// BusacarUsuario busca um usuário no banco de dados
 func BuscarUsuario(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Buscando um usuário em especifico!"))
 }
