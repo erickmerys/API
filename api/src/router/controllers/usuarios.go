@@ -143,7 +143,7 @@ func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
 // DeletarUsuario apaga um usuário do banco de dados
 func DeletarUsuario(w http.ResponseWriter, r *http.Request) {
 	parametros := mux.Vars(r)
-	usuarioID, erro := strconv.ParseUint(parametros["usuario"], 10, 64)
+	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
 	if erro != nil {
 		repostas.Erro(w, http.StatusBadRequest, erro)
 		return
