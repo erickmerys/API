@@ -15,6 +15,8 @@ var (
 
 	//Porta onde API vai estar rodando
 	Porta = 0
+
+	SecretKey []byte
 )
 
 // Carregar vai inicializar as variáveis de ambiente
@@ -36,5 +38,6 @@ func Carregar() {
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_NOME"),
 	)
-	fmt.Println(StringConexaoBanco)
+
+	SecretKey = []byte(os.Getenv("SECRET_KEY"))
 }
