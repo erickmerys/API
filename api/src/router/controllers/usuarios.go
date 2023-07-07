@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"api/src/autenticacao"
 	"api/src/banco"
 	"api/src/modelos"
 	"api/src/repositorios"
 	"api/src/repostas"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -107,6 +109,17 @@ func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	usuarioaIDNoToken, erro := autenticacao.ExtrairUsuaripID(r)
+	if erro != nil {
+		repostas.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
+
+	if usuarioID != usuarioaIDNoToken {
+		repostas.Erro(w, http.StatusForbidden, errors.New("Não é possível atualizar um usuário que não seja o seu!"))
+		return
+	}
+
 	corpoRequest, erro := ioutil.ReadAll(r.Body)
 	if erro != nil {
 		repostas.Erro(w, http.StatusUnprocessableEntity, erro)
@@ -149,6 +162,15 @@ func DeletarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	usuarioaIDNoToken, erro := autenticacao.ExtrairUsuaripID(r)
+	if erro != nil {
+		repostas.Erro(w, http.StatusUnauthorized, erro)
+	}
+
+	if usuarioID != usuarioaIDNoToken {
+		repostas.Erro(w, http.StatusForbidden, errors.New("Não é possível deletar um usuário que não seja o seu!"))
+	}
+
 	db, erro := banco.Conectar()
 	if erro != nil {
 		repostas.Erro(w, http.StatusInternalServerError, erro)
@@ -158,6 +180,76 @@ func DeletarUsuario(w http.ResponseWriter, r *http.Request) {
 
 	repositorio := repositorios.NovoRepositorioDeUsuario(db)
 	if erro = repositorio.Deletar(usuarioID); erro != nil {
+		repostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	repostas.JSON(w, http.StatusNoContent, nil)
+}
+
+// SeguirUsuario permiti que um usuário siga outro
+func SeguirUsuario(w http.ResponseWriter, r *http.Request) {
+	seguidorID, erro := autenticacao.ExtrairUsuaripID(r)
+	if erro != nil {
+		repostas.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
+
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
+	if erro != nil {
+		repostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	if seguidorID == usuarioID {
+		repostas.Erro(w, http.StatusForbidden, errors.New("Não é possível seguir você mesmo"))
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		repostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	repositorio := repositorios.NovoRepositorioDeUsuario(db)
+	if erro = repositorio.Seguir(usuarioID, seguidorID); erro != nil {
+		repostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	repostas.JSON(w, http.StatusNoContent, nil)
+}
+
+// PararDeSeguirUsuario permite que um usuário deixe de seguir outro
+func PararDeSeguirUsuario(w http.ResponseWriter, r *http.Request) {
+	seguidorID, erro := autenticacao.ExtrairUsuaripID(r)
+	if erro != nil {
+		repostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	parametros := mux.Vars(r)
+	usuarioID, erro := strconv.ParseUint(parametros["usuarioId"], 10, 64)
+	if erro != nil {
+		repostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	if seguidorID == usuarioID {
+		repostas.Erro(w, http.StatusForbidden, errors.New("Não é possível parar de seguir você mesmo"))
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		repostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repositorio := repositorios.NovoRepositorioDeUsuario(db)
+	if erro = repositorio.ParaDeSeguir(usuarioID, seguidorID); erro != nil {
 		repostas.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}

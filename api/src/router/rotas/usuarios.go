@@ -23,18 +23,30 @@ var rotaUsuarios = []Rotas{
 		URI:                 "/usuarios/{usuarioId}",
 		Metodo:              http.MethodGet,
 		Funcao:              controllers.BuscarUsuario,
-		RequestAutenticacao: false,
+		RequestAutenticacao: true,
 	},
 	{
 		URI:                 "/usuarios/{usuarioId}",
 		Metodo:              http.MethodPut,
 		Funcao:              controllers.AtualizarUsuario,
-		RequestAutenticacao: false,
+		RequestAutenticacao: true,
 	},
 	{
 		URI:                 "/usuarios/{usuarioId}",
 		Metodo:              http.MethodDelete,
 		Funcao:              controllers.DeletarUsuario,
-		RequestAutenticacao: false,
+		RequestAutenticacao: true,
+	},
+	{
+		URI:                 "/usuarios/{usuarioId}/seguir",
+		Metodo:              http.MethodPost,
+		Funcao:              controllers.SeguirUsuario,
+		RequestAutenticacao: true,
+	},
+	{
+		URI:                 "/usuarios/{usuarioId}/parar-de-seguir",
+		Metodo:              http.MethodPost,
+		Funcao:              controllers.PararDeSeguirUsuario,
+		RequestAutenticacao: true,
 	},
 }
