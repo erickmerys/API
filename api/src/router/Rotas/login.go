@@ -1,9 +1,11 @@
-package rotas
+package Rotas
 
 import (
-	"api/src/router/controllers"
+	"api/src/controllers"
 	"net/http"
 )
+
+
 
 var rotaLogin = Rotas{
 	URI:                 "/login",

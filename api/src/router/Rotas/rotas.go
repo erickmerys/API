@@ -1,4 +1,4 @@
-package rotas
+package Rotas
 
 import (
 	"api/src/middlewares"
@@ -18,6 +18,7 @@ type Rotas struct {
 func Configurar(r *mux.Router) *mux.Router {
 	rotas := rotaUsuarios
 	rotas = append(rotas, rotaLogin)
+	rotas = append(rotas, rotasPublicacoes...)
 
 	for _, rota := range rotas {
 

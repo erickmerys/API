@@ -1,9 +1,10 @@
-package rotas
+package Rotas
 
 import (
-	"api/src/router/controllers"
+	"api/src/controllers"
 	"net/http"
 )
+
 
 var rotaUsuarios = []Rotas{
 	//Esse metodo cadastra um usuario
@@ -47,6 +48,24 @@ var rotaUsuarios = []Rotas{
 		URI:                 "/usuarios/{usuarioId}/parar-de-seguir",
 		Metodo:              http.MethodPost,
 		Funcao:              controllers.PararDeSeguirUsuario,
+		RequestAutenticacao: true,
+	},
+	{
+		URI:                 "/usuarios/{usuarioId}/seguidores",
+		Metodo:              http.MethodGet,
+		Funcao:              controllers.BuscarSeguidores,
+		RequestAutenticacao: true,
+	},
+	{
+		URI:                 "/usuarios/{usuarioId}/seguindo",
+		Metodo:              http.MethodGet,
+		Funcao:              controllers.BuscarSeguindo,
+		RequestAutenticacao: true,
+	},
+	{
+		URI:                 "/usuarios/{usuarioId}/atualizar-senha",
+		Metodo:              http.MethodPost,
+		Funcao:              controllers.AtualizarSenha,
 		RequestAutenticacao: true,
 	},
 }
