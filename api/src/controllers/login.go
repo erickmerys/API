@@ -41,7 +41,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		repostas.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
-	
+
 	if erro = seguranca.VerificarSenha(usuarioSalvoNoBanco.Senha, usuario.Senha); erro != nil {
 		repostas.Erro(w, http.StatusUnauthorized, erro)
 		return

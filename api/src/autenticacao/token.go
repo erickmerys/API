@@ -29,7 +29,7 @@ func ValidarToken(r *http.Request) error {
 		return erro
 	}
 
-	if _,ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return nil
 	}
 
@@ -61,7 +61,7 @@ func ExtrairUsuaripID(r *http.Request) (uint64, error) {
 	}
 
 	if permissoes, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		usuarioID, erro := strconv.ParseUint(fmt.Sprintf("%0.f",permissoes["usuarioId"]), 10, 64)
+		usuarioID, erro := strconv.ParseUint(fmt.Sprintf("%0.f", permissoes["usuarioId"]), 10, 64)
 		if erro != nil {
 			return 0, erro
 		}
