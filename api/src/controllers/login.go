@@ -8,14 +8,14 @@ import (
 	"api/src/repostas"
 	"api/src/seguranca"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"strconv"
 )
 
 // Login é responsável por autenticar um usuário na API
 func Login(w http.ResponseWriter, r *http.Request) {
-	corpoRequest, erro := ioutil.ReadAll(r.Body)
+	corpoRequest, erro := io.ReadAll(r.Body)
 	if erro != nil {
 		repostas.Erro(w, http.StatusUnprocessableEntity, erro)
 		return
@@ -47,7 +47,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, _ := autenticacao.CriarToken(usuarioSalvoNoBanco.ID)
-	fmt.Println(token)
-	w.Write([]byte(token))
+	token, erro := autenticacao.CriarToken(usuarioSalvoNoBanco.ID)
+	if erro != nil {
+		repostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	usuarioID := strconv.FormatUint(usuarioSalvoNoBanco.ID, 10)
+
+	repostas.JSON(w, http.StatusOK, modelos.DadosAutenticacao{ID: usuarioID, Token: token})
 }

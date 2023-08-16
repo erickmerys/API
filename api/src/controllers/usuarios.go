@@ -9,7 +9,7 @@ import (
 	"api/src/seguranca"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"strconv"
 	"strings"
 
@@ -20,7 +20,7 @@ import (
 
 // CriarUsuario cria um usuário no banco de dados
 func CriarUsuario(w http.ResponseWriter, r *http.Request) {
-	corpoRequest, erro := ioutil.ReadAll(r.Body)
+	corpoRequest, erro := io.ReadAll(r.Body)
 	if erro != nil {
 		repostas.Erro(w, http.StatusUnprocessableEntity, erro)
 		return
@@ -121,7 +121,7 @@ func AtualizarUsuario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	corpoRequest, erro := ioutil.ReadAll(r.Body)
+	corpoRequest, erro := io.ReadAll(r.Body)
 	if erro != nil {
 		repostas.Erro(w, http.StatusUnprocessableEntity, erro)
 		return
@@ -329,8 +329,8 @@ func AtualizarSenha(w http.ResponseWriter, r *http.Request) {
 		repostas.Erro(w, http.StatusForbidden, errors.New("Não é possível atualizar a senha de um usuário que não seja o seu"))
 	}
 
-	corpoRequest, erro := ioutil.ReadAll(r.Body)
-	
+	corpoRequest, erro := io.ReadAll(r.Body)
+
 	var senha modelos.Senha
 	if erro = json.Unmarshal(corpoRequest, &senha); erro != nil {
 		repostas.Erro(w, http.StatusBadRequest, erro)
